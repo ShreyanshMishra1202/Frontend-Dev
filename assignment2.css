@@ -1,7 +1,9 @@
 #head{
     background-color: lightskyblue;
     height: 50px;
-    font-size: large;
+    padding:20px;
+    color: tomato;
+    font-size:30px;
 }
 #subhead{
     background-color: black;
@@ -18,8 +20,9 @@ a{
 
 }
 #pagehead{
-    width: 900px;
+    width: 800px;
     float: left;
+    height: 600px;
 }
 #pageside{
     background-color: lightskyblue;
