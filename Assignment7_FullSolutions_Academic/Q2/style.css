@@ -1,0 +1,12 @@
+/* Q2 - Height & Width Practice */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;padding:24px;background:#fff;color:#111;}
+.center{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.sizes{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.box{background:#f5f5f5;border:1px solid #ddd;padding:12px;border-radius:6px;text-align:center;}
+.px{width:180px;height:150px;}
+.pct{width:40%;min-height:80px;max-width:280px;}
+.vh{height:30vh;max-width:220px;width:160px;}
+/* overflow demonstration */
+.pct p{overflow:auto;}
+@media (max-width:700px){.sizes{flex-direction:column;}}

@@ -1,0 +1,16 @@
+/* Q5 - Advanced selectors with comments */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;padding:18px;background:#fff;color:#111;}
+/* attribute selector: inputs with type="text" */
+input[type="text"]{border:2px solid #cfe;}
+/* attribute selector: links that start with https */
+a[href^="https"]{text-decoration:underline;}
+/* pseudo-classes */
+a:hover{color:#1e88e5;}
+input:focus{outline:3px solid rgba(30,136,229,0.12);}
+/* nth-child example */
+.items li:nth-child(odd){background:#f9f9f9;padding:6px;}
+/* pseudo-elements */
+.items li::before{content:"• ";color:#1e88e5;}
+/* combinators */
+.inputs > input{display:block;margin-bottom:8px;} /* child combinator */

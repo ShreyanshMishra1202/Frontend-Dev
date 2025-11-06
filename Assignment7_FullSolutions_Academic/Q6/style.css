@@ -1,0 +1,11 @@
+/* Q6 - Transformations */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;padding:20px;background:#fff;color:#111;}
+.trans-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.tbox{width:120px;height:100px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all 0.4s ease;}
+.tbox span{display:block;}
+.rotate:hover{transform:rotate(12deg);}
+.scale:hover{transform:scale(1.1);}
+.translate:hover{transform:translateX(12px);}
+.skew:hover{transform:skewX(8deg);}
+@media (max-width:700px){.trans-row{flex-direction:column;}}

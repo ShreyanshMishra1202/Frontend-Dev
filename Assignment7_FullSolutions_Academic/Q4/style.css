@@ -1,0 +1,11 @@
+/* Q4 - Shadows and Depth */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;padding:20px;background:#fff;color:#111;}
+.cards{display:flex;gap:12px;flex-wrap:wrap;}
+.card{flex:1 1 220px;padding:16px;border-radius:8px;background:#fff;border:1px solid #eee;transition:box-shadow 0.22s ease,transform 0.22s ease;}
+.small{box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.medium{box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+.large{box-shadow:0 8px 20px rgba(0,0,0,0.12);}
+.card h3{text-shadow:0 1px 0 rgba(0,0,0,0.02);margin-top:0;}
+.card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(0,0,0,0.12);}
+@media (max-width:700px){.cards{flex-direction:column;}}

@@ -1,0 +1,9 @@
+/* Q10 - Navigation Bar (Academic) */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;background:#fff;color:#111;}
+.nav{background:#f8f8f8;border-bottom:1px solid #eee;}
+.menu{list-style:none;margin:0;padding:0;display:flex;gap:8px;align-items:center;padding:8px 16px;}
+.menu li a{display:block;padding:8px 12px;text-decoration:none;color:#111;border-radius:6px;transition:all 0.3s ease;border:1px solid transparent;}
+.menu li a:hover{background:#f1f1f1;border-color:#e0e0e0;transform:translateY(-2px);}
+.menu li a.active{background:#e8f0ff;color:#1e88e5;}
+@media (max-width:700px){.menu{flex-direction:column;align-items:stretch;}}

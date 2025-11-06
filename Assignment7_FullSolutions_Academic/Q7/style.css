@@ -1,0 +1,12 @@
+/* Q7 - Typography and Text Styling */
+*{box-sizing:border-box;}
+body{margin:0;padding:20px;font-family:Georgia,serif;color:#111;background:#fff;}
+.text h1{font-family:Arial,Helvetica,sans-serif;margin-bottom:8px;}
+p{line-height:1.6;font-size:16px;}
+.lead{font-size:18px;font-weight:600;letter-spacing:0.2px;}
+mark{background:#fff5b1;padding:0 4px;}
+strong{color:#111;}
+em{font-style:italic;color:#444;}
+/* ::first-letter and ::first-line */
+.first::first-letter{font-size:22px;font-weight:700;}
+.first::first-line{letter-spacing:0.5px;}
