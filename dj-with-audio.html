@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DJ Lights Beat Visualizer</title>
+<style>
+  :root {
+    --bg: #090914;
+    --text: #e9eef8;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at 20% 20%, #0e1630, var(--bg) 60%);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter", Arial, sans-serif;
+    overflow: hidden;
+  }
+
+  .stage {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    max-width: 800px;
+    position: relative;
+    z-index: 2;
+  }
+
+  p {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 16px;
+    position: relative;
+  }
+
+  .dj-btn {
+    border: none;
+    padding: 12px 20px;
+    margin: 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+
+  .dj-btn:active {
+    transform: scale(0.97);
+  }
+
+  .controls {
+    margin-top: 20px;
+  }
+
+  /* Hover light effect */
+  .lightup {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .lightup::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    z-index: -1;
+    border-radius: 18px;
+    background: conic-gradient(
+      from 0deg,
+      #ff0066 0deg,
+      #ff6600 60deg,
+      #ffd700 120deg,
+      #32d5ff 180deg,
+      #7a3bff 240deg,
+      #ff0066 300deg
+    );
+    filter: blur(25px) saturate(1.8);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s, transform 0.3s;
+    animation: rotateHue 2.5s linear infinite;
+    pointer-events: none;
+  }
+
+  .lightup:hover::before {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  @keyframes rotateHue {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Beat lights */
+  .lights {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 1;
+  }
+
+  .light {
+    width: 40px;
+    height: 120px;
+    border-radius: 10px;
+    background: linear-gradient(to top, #ff00cc, #00ffff);
+    opacity: 0.3;
+    transition: height 0.1s, opacity 0.1s, filter 0.1s;
+    filter: blur(4px);
+  }
+
+  .volume-control {
+    margin-top: 20px;
+    width: 200px;
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <h1>🎧 DJ Lights Beat Visualizer</h1>
+    <p class="lightup" id="para">
+      Hover or press Play to light up the beat! Use Stop, Rewind, or Fast Forward to control the track.
+    </p>
+
+    <div class="controls">
+      <button class="dj-btn lightup" id="playBtn">▶ Play</button>
+      <button class="dj-btn lightup" id="stopBtn">⏹ Stop</button>
+      <button class="dj-btn lightup" id="rewBtn">⏪ Rewind</button>
+      <button class="dj-btn lightup" id="ffBtn">⏩ Fast Forward</button>
+      <br />
+      <label for="volume">🔊 Volume:</label>
+      <input type="range" id="volume" class="volume-control" min="0" max="1" step="0.01" value="0.8">
+    </div>
+  </div>
+
+  <!-- Beat lights -->
+  <div class="lights" id="lights">
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+    <div class="light"></div>
+  </div>
+
+  <!-- Your Audio -->
+  <!-- Replace with your file -->
+  <audio id="djSound" src="/Lollypop Lagelu-BiharMasti.IN.mp3" crossorigin="anonymous"></audio>
+
+  <script>
+    const sound = document.getElementById('djSound');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const rewBtn = document.getElementById('rewBtn');
+    const ffBtn = document.getElementById('ffBtn');
+    const volumeControl = document.getElementById('volume');
+    const lights = document.querySelectorAll('.light');
+    const hoverElements = document.querySelectorAll('.lightup');
+
+    // Setup Web Audio API for beat detection
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(sound);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    function animateLights() {
+      requestAnimationFrame(animateLights);
+      analyser.getByteFrequencyData(dataArray);
+      const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+
+      lights.forEach((light, i) => {
+        const height = Math.max(30, avg * (0.5 + Math.random()));
+        light.style.height = `${height}px`;
+        light.style.opacity = (avg / 255).toFixed(2);
+        light.style.filter = `blur(${3 + avg / 80}px)`;
+      });
+    }
+
+    animateLights();
+
+    // Play sound
+    playBtn.addEventListener('click', async () => {
+      await audioCtx.resume();
+      sound.play();
+    });
+
+    // Stop sound
+    stopBtn.addEventListener('click', () => {
+      sound.pause();
+      sound.currentTime = 0;
+    });
+
+    // Rewind 5 seconds
+    rewBtn.addEventListener('click', () => {
+      sound.currentTime = Math.max(0, sound.currentTime - 5);
+    });
+
+    // Fast forward 5 seconds
+    ffBtn.addEventListener('click', () => {
+      sound.currentTime = Math.min(sound.duration, sound.currentTime + 5);
+    });
+
+    // Volume control
+    volumeControl.addEventListener('input', () => {
+      sound.volume = volumeControl.value;
+    });
+
+    // Play on hover
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', async () => {
+        await audioCtx.resume();
+        sound.currentTime = 0;
+        sound.play().catch(err => console.log('Autoplay blocked:', err));
+      });
+    });
+  </script>
+</body>
+</html>

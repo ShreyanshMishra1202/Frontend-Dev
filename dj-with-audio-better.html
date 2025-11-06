@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DJ Visualizer Pro - Lollypop Lagelu</title>
+<style>
+  :root {
+    --bg: #050508;
+    --text: #e9eef8;
+    --neon1: #ff007c;
+    --neon2: #00ffff;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at 30% 20%, #101032, var(--bg) 70%);
+    color: var(--text);
+    font-family: "Inter", Arial, sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    text-shadow: 0 0 10px var(--neon1), 0 0 20px var(--neon2);
+  }
+
+  /* Control panel */
+  .controls {
+    margin-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .dj-btn {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .dj-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 15px var(--neon2);
+  }
+
+  .volume-control {
+    width: 160px;
+  }
+
+  /* Beat Bars */
+  .visualizer {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .bar {
+    width: 10px;
+    height: 40px;
+    background: linear-gradient(to top, var(--neon1), var(--neon2));
+    border-radius: 6px;
+    transition: height 0.08s, filter 0.08s;
+    filter: brightness(0.6);
+  }
+
+  /* 360° rotating light ring */
+  .ring {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 6px solid transparent;
+    background: conic-gradient(
+      from 0deg,
+      var(--neon1),
+      var(--neon2),
+      var(--neon1)
+    );
+    filter: blur(10px) brightness(1.5);
+    animation: rotateRing 5s linear infinite;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .ring:hover {
+    transform: scale(1.15);
+    animation: pulseRing 0.5s infinite alternate ease-in-out;
+    filter: brightness(2) saturate(1.6);
+  }
+
+  @keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulseRing {
+    from { transform: scale(1); }
+    to { transform: scale(1.25); }
+  }
+
+  /* Stage container */
+  .stage {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  p {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 14px;
+    border-radius: 10px;
+    position: absolute;
+    top: -70px;
+    font-size: 15px;
+    color: #ccc;
+  }
+
+</style>
+</head>
+<body>
+  <h1>🎧 DJ Visualizer Pro</h1>
+  <div class="stage">
+    <div class="ring" id="ring"></div>
+    <p>Hover the ring — feel the Lollypop beat!</p>
+  </div>
+
+  <div class="visualizer" id="visualizer"></div>
+
+  <div class="controls">
+    <button class="dj-btn" id="playBtn">▶ Play</button>
+    <button class="dj-btn" id="stopBtn">⏹ Stop</button>
+    <button class="dj-btn" id="rewBtn">⏪ Rewind</button>
+    <button class="dj-btn" id="ffBtn">⏩ Fast Forward</button>
+    <input type="range" id="volume" class="volume-control" min="0" max="1" step="0.01" value="0.8">
+  </div>
+
+  <!-- Your Lollypop song -->
+  <audio id="djSound" src="Lollypop Lagelu-BiharMasti.IN.mp3" crossorigin="anonymous"></audio>
+
+  <script>
+    const sound = document.getElementById("djSound");
+    const playBtn = document.getElementById("playBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const rewBtn = document.getElementById("rewBtn");
+    const ffBtn = document.getElementById("ffBtn");
+    const volumeControl = document.getElementById("volume");
+    const ring = document.getElementById("ring");
+
+    // Create 32 bars
+    const visualizer = document.getElementById("visualizer");
+    for (let i = 0; i < 32; i++) {
+      const bar = document.createElement("div");
+      bar.classList.add("bar");
+      visualizer.appendChild(bar);
+    }
+    const bars = document.querySelectorAll(".bar");
+
+    // Setup Web Audio API
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+    const source = audioCtx.createMediaElementSource(sound);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 128;
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    // Animate bars with frequency data
+    function animateBars() {
+      requestAnimationFrame(animateBars);
+      analyser.getByteFrequencyData(dataArray);
+
+      let bass = 0, treble = 0;
+      bars.forEach((bar, i) => {
+        const val = dataArray[i];
+        bar.style.height = `${Math.max(20, val / 2)}px`;
+        bar.style.filter = `brightness(${0.5 + val / 200})`;
+
+        // bass ~ lower indexes, treble ~ higher indexes
+        if (i < 10) bass += val;
+        else if (i > 20) treble += val;
+      });
+
+      bass /= 10;
+      treble /= 10;
+
+      // Color transitions by bass/treble
+      const bassColor = `hsl(${Math.min(360, 10 + bass)}, 100%, 50%)`;
+      const trebleColor = `hsl(${200 + Math.min(160, treble / 2)}, 100%, 60%)`;
+      document.documentElement.style.setProperty("--neon1", bassColor);
+      document.documentElement.style.setProperty("--neon2", trebleColor);
+    }
+
+    animateBars();
+
+    // Controls
+    playBtn.addEventListener("click", async () => {
+      await audioCtx.resume();
+      sound.play();
+    });
+
+    stopBtn.addEventListener("click", () => {
+      sound.pause();
+      sound.currentTime = 0;
+    });
+
+    rewBtn.addEventListener("click", () => {
+      sound.currentTime = Math.max(0, sound.currentTime - 5);
+    });
+
+    ffBtn.addEventListener("click", () => {
+      sound.currentTime = Math.min(sound.duration, sound.currentTime + 5);
+    });
+
+    volumeControl.addEventListener("input", () => {
+      sound.volume = volumeControl.value;
+    });
+
+    // Speaker-style pulse when hovering
+    ring.addEventListener("mouseenter", async () => {
+      await audioCtx.resume();
+      sound.currentTime = 0;
+      sound.play();
+    });
+  </script>
+</body>
+</html>

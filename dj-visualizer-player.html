@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DJ Visualizer Player</title>
+
+<style>
+:root {
+  --bg: #050508;
+  --text: #e9eef8;
+  --neon1: #ff007c;
+  --neon2: #00ffff;
+}
+body {
+  margin: 0;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #0a0a20, var(--bg) 80%);
+  overflow: hidden;
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Floating playlist top-right */
+.playlist {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 220px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 0 12px rgba(0,255,255,0.25);
+  z-index: 10;
+}
+.playlist div {
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.playlist div:hover { background: rgba(255,255,255,0.12); }
+.playing { background: rgba(0,255,255,0.25); font-weight: 600; }
+
+/* Sparkles */
+.sparkle {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  opacity: 0.7; animation: sparkleMove 6s linear infinite;
+}
+@keyframes sparkleMove {
+  0% { transform: translateY(0); opacity: .4; }
+  50% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Center stage */
+.stage {
+  position: relative;
+  width: 300px; height: 300px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ✅ Beat Pulse fixed — stays centered */
+.beat-circle {
+  position: absolute;
+  width: 255px; height: 255px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%);
+  filter: blur(18px);
+  transform-origin: center center;
+  --pulse: 1;
+  transform: scale(var(--pulse));
+  will-change: transform;
+}
+
+/* Ring */
+.ring {
+  position: absolute;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--neon1), var(--neon2), var(--neon1));
+  filter: blur(10px) brightness(1.5);
+  animation: spin 5s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Bars */
+.visualizer {
+  position: absolute; bottom: -25px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 7px;
+}
+.bar {
+  width: 8px; height: 30px;
+  background: linear-gradient(to top, var(--neon1), var(--neon2));
+  border-radius: 6px;
+  filter: brightness(.6);
+  transition: height .07s;
+}
+
+/* Song name */
+.song-title {
+  position: absolute; top: -60px;
+  background: rgba(255,255,255,0.07);
+  padding: 8px 15px; border-radius: 10px;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Progress bar */
+.progress-box { text-align: center; margin-top: 8px; }
+#seekBar {
+  width: 240px; height: 6px; margin-top: 4px;
+  appearance: none; background: rgba(255,255,255,0.08);
+  border-radius: 4px; cursor: pointer;
+}
+#seekBar::-webkit-slider-thumb {
+  appearance: none; width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--neon2);
+  box-shadow: 0 0 10px var(--neon2);
+}
+.time-label { font-size: 12px; opacity: .8; }
+
+/* Controls */
+.controls { margin-top: 12px; display: flex; gap: 10px; }
+.dj-btn {
+  padding: 9px 14px; border: none; border-radius: 10px;
+  background: rgba(255,255,255,0.08); color: var(--text);
+  cursor: pointer; font-weight: 600;
+}
+.dj-btn:hover { transform: scale(1.08); box-shadow: 0 0 12px var(--neon2); }
+
+.volume-control { width: 160px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<!-- <h2 style="margin-bottom:5px;text-shadow:0 0 10px var(--neon1);">🎧 DJ Visualizer Player</h2> -->
+<h2 style="margin-bottom:5px;text-shadow:0 0 10px var(--neon1);">🎧 Neeraj Agarwal DJ Sounds</h2>
+
+<div id="sparkles"></div>
+<div class="playlist" id="playlistBox"></div>
+
+<div class="stage">
+  <div class="beat-circle" id="beatCircle"></div>
+  <div class="ring"></div>
+  <div class="song-title" id="songName">Loading...</div>
+  <div class="visualizer" id="visualizer"></div>
+</div>
+
+<div class="progress-box">
+  <span class="time-label" id="currentTime">0:00</span><br>
+  <input type="range" id="seekBar" step="1"><br>
+  <span class="time-label" id="totalTime">0:00</span>
+</div>
+
+<div class="controls">
+  <button class="dj-btn" id="prevBtn">⏮</button>
+  <button class="dj-btn" id="playBtn">▶</button>
+  <button class="dj-btn" id="stopBtn">⏹</button>
+  <button class="dj-btn" id="nextBtn">⏭</button>
+</div>
+
+<input type="range" id="volume" class="volume-control" min="0" max="1" step="0.01" value="0.8">
+
+<audio id="djSound"></audio>
+
+<script>
+// Songs
+let playlist = [
+ {name:"Lollypop Lagelu Remix", file:"Lollypop Lagelu-BiharMasti.IN.mp3"},
+ {name:"Saket Hota Raja Ji", file:"Saket Hota Raja Ji-BiharMasti.IN.mp3"},
+ {name:"Chhalakata Hamro Jawaniya", file:"Chhalakata Hamro Jawaniya(BhojpuriWap.In).mp3"},
+ {name:"Odhani Ke Rang Piyar", file:"Odhani Ke Rang Piyar(BhojpuriWap.In).mp3"},
+];
+
+let current = 0;
+const audio = document.getElementById("djSound");
+const songName = document.getElementById("songName");
+const list = document.getElementById("playlistBox");
+
+// Build playlist UI
+playlist.forEach((s,i)=>{
+ let d=document.createElement("div");
+ d.textContent=s.name;
+ d.onclick=()=>{ load(i); audio.play(); playBtn.textContent="⏸"; };
+ list.appendChild(d);
+});
+
+function load(i){
+ current=i;
+ audio.src = playlist[i].file;
+ songName.textContent = playlist[i].name;
+ document.querySelectorAll(".playlist div")
+   .forEach((x,j)=>x.classList.toggle("playing",j===i));
+}
+load(0);
+
+// Visualizer
+const AC = window.AudioContext||window.webkitAudioContext;
+const ctx = new AC();
+const src = ctx.createMediaElementSource(audio);
+const an = ctx.createAnalyser(); an.fftSize = 128;
+src.connect(an); an.connect(ctx.destination);
+const arr = new Uint8Array(an.frequencyBinCount);
+
+const barsWrap = document.getElementById("visualizer");
+for(let i=0;i<32;i++){let b=document.createElement("div");b.className="bar";barsWrap.appendChild(b);}
+const bars = document.querySelectorAll(".bar");
+const pulse = document.getElementById("beatCircle");
+
+function animate(){
+ requestAnimationFrame(animate);
+ an.getByteFrequencyData(arr);
+
+ let bass = 0;
+ bars.forEach((b,i)=>{
+   let v = arr[i];
+   b.style.height = `${Math.max(20,v/2)}px`;
+   if(i<10) bass+=v;
+ });
+
+ bass/=10;
+ const target = 1 + Math.min(0.28, bass/250);
+ pulse._smooth = pulse._smooth ?? 1;
+ pulse._smooth += (target - pulse._smooth) * 0.18;
+ pulse.style.setProperty("--pulse", pulse._smooth);
+}
+animate();
+
+// Controls + progress
+const playBtn=document.getElementById("playBtn");
+const stopBtn=document.getElementById("stopBtn");
+const prevBtn=document.getElementById("prevBtn");
+const nextBtn=document.getElementById("nextBtn");
+const seekBar=document.getElementById("seekBar");
+const currentTime=document.getElementById("currentTime");
+const totalTime=document.getElementById("totalTime");
+volume.oninput=()=>audio.volume=volume.value;
+
+const format=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,"0")}`;
+audio.onloadedmetadata=()=>{seekBar.max=audio.duration;totalTime.textContent=format(audio.duration);}
+audio.ontimeupdate=()=>{seekBar.value=audio.currentTime;currentTime.textContent=format(audio.currentTime);}
+seekBar.oninput=()=>audio.currentTime=seekBar.value;
+
+playBtn.onclick=async()=>{
+ await ctx.resume();
+ if(audio.paused){audio.play();playBtn.textContent="⏸";}
+ else{audio.pause();playBtn.textContent="▶";}
+};
+stopBtn.onclick=()=>{audio.pause();audio.currentTime=0;playBtn.textContent="▶";}
+prevBtn.onclick=()=>{current=(current-1+playlist.length)%playlist.length;load(current);audio.play();}
+nextBtn.onclick=()=>{current=(current+1)%playlist.length;load(current);audio.play();}
+audio.onended=()=>nextBtn.click();
+
+// Sparkles
+const spark=document.getElementById("sparkles");
+for(let i=0;i<80;i++){
+ const s=document.createElement("div");
+ s.className="sparkle";
+ s.style.left=Math.random()*100+"vw";
+ s.style.backgroundColor=Math.random()>0.5?"#00ffff":"#ff007c";
+ s.style.animationDelay=Math.random()*6+"s";
+ spark.appendChild(s);
+}
+</script>
+</body>
+</html>

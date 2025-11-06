@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DJ Lights Hover Effect</title>
+<style>
+  :root{
+    --bg:#0b0b0f;
+    --card-bg: rgba(255,255,255,0.04);
+    --text:#e9eef8;
+    --accent-size: 120%;
+  }
+
+  /* Page */
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient( circle at 10% 10%, #081226 0%, var(--bg) 40% );
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    box-sizing:border-box;
+  }
+
+  /* Card */
+  .stage{
+    width:min(980px, 96vw);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:16px;
+    padding:32px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    display:grid;
+    gap:20px;
+    align-items:center;
+  }
+
+  h1{
+    margin:0 0 6px 0;
+    font-size:20px;
+    letter-spacing:0.4px;
+    color:#fff;
+    opacity:0.95;
+  }
+
+  p.lead{
+    margin:0;
+    font-size:16px;
+    line-height:1.5;
+    max-width:80ch;
+    padding:18px;
+    border-radius:12px;
+    background:var(--card-bg);
+    position:relative;
+    overflow:visible;
+  }
+
+  /* Buttons row */
+  .controls{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+
+  .dj-btn{
+    appearance:none;
+    border:0;
+    padding:12px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    letter-spacing:0.6px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    color:var(--text);
+    position:relative;
+    overflow:visible;
+    transition:transform 140ms ease, box-shadow 140ms ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  .dj-btn:active{ transform:translateY(1px) scale(0.997); }
+
+  /* Shared glow effect for paragraph and buttons */
+  .lightup{
+    --glow-opacity:0;
+    --glow-scale:0.8;
+    position:relative;
+    isolation:isolate; /* keep pseudo-element from blending with page */
+    transition: transform 160ms ease;
+  }
+
+  /* animated colorful pseudo-element */
+  .lightup::before{
+    content:"";
+    position:absolute;
+    inset:-30%;
+    z-index:-1;
+    border-radius:18px;
+    background:
+      conic-gradient(
+        from 0deg,
+        #ff0066 0deg,
+        #ff6600 45deg,
+        #ffd700 90deg,
+        #32d5ff 140deg,
+        #7a3bff 200deg,
+        #ff0066 260deg
+      );
+    filter: blur(22px) saturate(1.8) contrast(1.05);
+    transform-origin:center;
+    opacity: var(--glow-opacity);
+    transform: scale(var(--glow-scale));
+    transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
+    /* animate the gradient's rotation */
+    animation: rotateHue 2.2s linear infinite;
+    pointer-events:none;
+  }
+
+  /* Stronger, faster effect when hovered */
+  .lightup:hover{
+    --glow-opacity:1;
+    --glow-scale:1.02;
+    transform: translateY(-3px);
+  }
+
+  /* Make buttons' glow shaped properly */
+  .dj-btn.lightup::before{
+    border-radius:12px;
+    inset:-40%;
+  }
+  p.lead.lightup::before{
+    border-radius:14px;
+    inset:-20%;
+  }
+
+  /* subtle inner color highlight on hover */
+  .lightup:hover{
+    box-shadow:
+      0 10px 40px rgba(0,0,0,0.6),
+      0 0 40px rgba(255,255,255,0.02);
+  }
+
+  /* extra neon border on hover */
+  .lightup:hover::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    border-radius:12px;
+    padding:0;
+    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    mix-blend-mode:overlay;
+  }
+
+  /* Keyboard-focus accessibility */
+  .lightup:focus{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(150,150,255,0.12), 0 14px 40px rgba(0,0,0,0.65);
+  }
+
+  /* tiny variant sizes */
+  .dj-btn.small{ padding:8px 12px; font-size:14px; border-radius:8px; }
+  .dj-btn.large{ padding:14px 22px; font-size:16px; border-radius:12px; }
+
+  /* animation rotates the gradient so lights move */
+  @keyframes rotateHue{
+    from{ transform: rotate(0deg) scale(var(--glow-scale)); }
+    to  { transform: rotate(360deg) scale(var(--glow-scale)); }
+  }
+
+  /* responsive */
+  @media (max-width:560px){
+    .stage{ padding:20px; }
+    .controls{ gap:10px; }
+  }
+
+</style>
+</head>
+<body>
+  <main class="stage" role="main" aria-labelledby="title">
+    <div>
+      <h1 id="title">DJ Lights Hover Demo</h1>
+      <p class="lead lightup" tabindex="0">
+        Hover over this paragraph or any of the buttons below to see them light up like DJ lights —
+        animated colorful glow, pulsing and rotating, created with only CSS (no JavaScript).
+      </p>
+    </div>
+
+    <div class="controls" aria-hidden="false">
+      <button class="dj-btn lightup small" type="button">Play</button>
+      <button class="dj-btn lightup" type="button">Pause</button>
+      <button class="dj-btn lightup" type="button">Skip</button>
+      <button class="dj-btn lightup large" type="button">Drop Beat</button>
+      <button class="dj-btn lightup" type="button">Loop</button>
+    </div>
+  </main>
+</body>
+</html>
