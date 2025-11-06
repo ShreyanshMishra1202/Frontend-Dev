@@ -1,0 +1,18 @@
+/* Q4 - Selectors practice: comments explain each rule */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;padding:18px;background:#fff;color:#222;}
+/* element selector */
+p{line-height:1.5;}
+/* class selector */
+.note{background:#f3f7ff;border-left:4px solid #cfe0ff;padding:8px;}
+/* ID selector */
+#unique{font-weight:600;color:#1a237e;}
+/* attribute selector targets elements with a title attribute */
+a[title]{text-decoration:underline dotted;}
+/* child combinator: only direct child span gets border */
+.parent > span{display:inline-block;padding:4px;border:1px dashed #ddd;}
+/* adjacent sibling selector */
+h3 + .after{font-style:italic;}
+/* general sibling selector */
+h3 ~ .general{opacity:0.9;}
+footer{margin-top:18px;font-size:13px;color:#666;}

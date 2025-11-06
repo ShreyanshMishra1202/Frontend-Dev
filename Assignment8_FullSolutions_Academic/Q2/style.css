@@ -1,0 +1,13 @@
+/* Q2 - Tooltip Demo */
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;background:#fff;color:#222;padding:32px;}
+.center{display:flex;flex-direction:column;align-items:center;gap:18px;}
+.icons{display:flex;gap:28px;align-items:center;}
+.tooltip-wrap{position:relative;display:inline-block;}
+.icon{font-size:28px;display:inline-block;padding:8px;border-radius:6px;border:1px solid #ddd;cursor:default;}
+/* tooltip hidden by default */
+.tooltip{position:absolute;left:50%;transform:translateX(-50%) translateY(8px);bottom:100%;white-space:nowrap;padding:6px 8px;border-radius:4px;background:#222;color:#fff;opacity:0;pointer-events:none;transition:opacity 0.3s ease-in-out,transform 0.3s ease-in-out;font-size:13px;}
+/* show on hover and focus */
+.tooltip-wrap:hover .tooltip,
+.tooltip-wrap:focus-within .tooltip,
+.icon:focus + .tooltip{opacity:1;transform:translateX(-50%) translateY(0);}

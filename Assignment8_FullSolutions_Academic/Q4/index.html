@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Q4 - Selectors</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header><h1>CSS Selectors Practice</h1></header>
+  <main>
+    <section>
+      <h2>Element selector (p)</h2>
+      <p>This paragraph is styled using the element selector.</p>
+      <h2>Class selector (.note)</h2>
+      <p class="note">This uses a class selector.</p>
+      <h2>ID selector (#unique)</h2>
+      <p id="unique">This uses an ID selector.</p>
+      <h2>Attribute selector ([title])</h2>
+      <a href="#" title="tooltip">Link with title attribute</a>
+      <h2>Combinators</h2>
+      <div class="comb">
+        <p>Parent &gt; child example:</p>
+        <div class="parent"><span>child span</span></div>
+        <p>Adjacent sibling (+) and general sibling (~) below:</p>
+        <h3>Heading</h3>
+        <p class="after">Paragraph after heading (adjacent)</p>
+        <p class="general">Another paragraph later (general sibling)</p>
+      </div>
+    </section>
+  </main>
+  <footer>Q4 - Selectors</footer>
+</body>
+</html>
