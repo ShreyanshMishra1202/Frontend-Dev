@@ -1,0 +1,10 @@
+/* styles.css for Q10 */
+/* Minimal custom CSS — prefer Bootstrap utilities for layout and spacing */
+/* Shreyansh - Bootstrap Assignment */
+
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+
+header.bg-primary { background: linear-gradient(90deg, #0d6efd, #0b5ed7); }
+
+/* Make cards have consistent min-height for demo */
+.card.h-100 { min-height: 150px; }
